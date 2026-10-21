@@ -1,5 +1,6 @@
 name: build-desktop
 
+# Same dependency installs as upstream's package-ubuntu-dev.yml, which builds this branch.
 on:
   workflow_dispatch:
 
@@ -24,9 +25,15 @@ jobs:
       - uses: krdlab/setup-haxe@v2
         with:
           haxe-version: 4.3.3
-      - run: haxe setup.hxml
-      # setup.hxml installs the Haxe API from master; this branch needs its matching dev branch.
+
+      - run: haxelib install uuid
+      - run: haxelib git castle https://github.com/ncannasse/castle
+      - run: haxelib git heaps https://github.com/deepnight/heaps.git
+      - run: haxelib git hxnodejs https://github.com/HaxeFoundation/hxnodejs.git
+      - run: haxelib git electron https://github.com/deepnight/hxelectron.git
+      - run: haxelib git heaps-aseprite https://github.com/AustinEast/heaps-aseprite.git
       - run: haxelib git ldtk-haxe-api https://github.com/deepnight/ldtk-haxe-api.git dev-1.5.4 --always
+      - run: haxelib git deepnightLibs https://github.com/deepnight/deepnightLibs.git --always
       - run: haxelib list
 
       - uses: actions/setup-node@v6
