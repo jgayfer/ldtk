@@ -1,0 +1,41 @@
+name: build-desktop
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            pack: npx electron-builder build --win --x64 --publish never
+            artifact: windows-distribution
+            path: app/redist/*.exe
+          - os: macos-latest
+            pack: npx electron-builder build --mac --universal --publish never
+            artifact: mac-distribution
+            path: app/redist/*.dmg
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: krdlab/setup-haxe@v2
+        with:
+          haxe-version: 4.3.3
+      - run: haxe setup.hxml
+      - run: haxelib list
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+      - run: cd app && npm install
+      - run: cd app && npm run pack-prepare
+      - run: cd app && ${{ matrix.pack }}
+        shell: bash
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.path }}
