@@ -25,6 +25,8 @@ jobs:
         with:
           haxe-version: 4.3.3
       - run: haxe setup.hxml
+      # setup.hxml installs the Haxe API from master; this branch needs its matching dev branch.
+      - run: haxelib git ldtk-haxe-api https://github.com/deepnight/ldtk-haxe-api.git dev-1.5.4 --always
       - run: haxelib list
 
       - uses: actions/setup-node@v6
